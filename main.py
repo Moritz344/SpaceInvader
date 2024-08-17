@@ -1,6 +1,7 @@
 import pygame 
 import random
 import time
+import sys
 
 screen_width = 800
 screen_height = 600
@@ -9,17 +10,16 @@ caption = pygame.display.set_caption("SpaceInvaders")
 icon = pygame.image.load("assets/icon.png")
 pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
-
+FPS = 60
 # player var
 player_speed = 5
 player_x = 350
 player_y = 500
 
-health_bar_x = 50
-health_bar_y = 10
+
 # enemy var
 
-enemy_nums = 40
+enemy_nums = 20
 
 enemies = [] # x und y werte werden gespeichert
 
@@ -33,13 +33,12 @@ background_music = pygame.mixer.Sound("sounds/music.mp3")
 hit_sound.set_volume(0.1)
 shoot_sound.set_volume(0.1)
 
-
 init_enemy_y = 50
 enemy_spacing_x = 80
 enemy_spacing_y = 60
 
 columns = screen_width // enemy_spacing_x 
-rows = (400 - init_enemy_y) // enemy_spacing_y 
+rows = (400 - init_enemy_y) // enemy_spacing_y
 
 for i in range(enemy_nums):
           col = i % columns 
@@ -47,7 +46,7 @@ for i in range(enemy_nums):
           enemy_x = col * enemy_spacing_x
           enemy_y = init_enemy_y + row * enemy_spacing_y
      
-          enemies.append([enemy_x,enemy_y])
+          enemies.append({"x":enemy_x,"y":enemy_y})
 
 
 enemy_speed = 0.5
@@ -60,6 +59,7 @@ white = (255,255,255)
 
 # images
 player = pygame.image.load("assets/player.png")
+player = pygame.transform.scale(player,(50,50))
 player_rect = player.get_rect()
 player_rect.topleft = (player_x,player_y)
 player_health = 3
@@ -71,11 +71,7 @@ enemy= pygame.transform.scale(enemy,(50,50))
 enemy_rect = enemy.get_rect()
 enemy_rect.topleft = (enemy_x,enemy_y)
 
-# enemy 2
-enemy_2 = pygame.image.load("assets/enemy_3.png")
-enemy_rect_2 = enemy_2.get_rect()
-enemy_2 = pygame.transform.scale(enemy_2,(50,50))
-enemy_rect_2.topleft = (enemy_x,enemy_y)
+
 
 # bullet
 bullet_size = 5
@@ -86,6 +82,9 @@ bullet_speed = 0.3
 cooldown_time = 200  # Cooldown time in milliseconds
 last_shot_time = 0  # Time of the last shot
 
+cooldown_time_2 = 300
+last_shot_time_2 = 0
+
 # Text
 pygame.font.init()
 font = pygame.font.SysFont("Minecraft",30)
@@ -95,6 +94,10 @@ font_medium = pygame.font.SysFont("Minecraft",40)
 bullets = []
 score_points = 0
 
+#level
+level = 0
+
+enemy_bullets = []
 def show_menu():
      menu = True
      while menu:
@@ -129,48 +132,25 @@ def show_menu():
           clock.tick(60)
 show_menu()
 
-def pause():
-     stop = True
-     while stop:
-          global run
-          for event in pygame.event.get():
-               if event.type == pygame.QUIT:
-                    run = False
-                    stop = False
-                    
-               if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                         stop = False
-                    stop = False
+
+
+class Protection:
+     def __init__(self,x,y):
+          self.pos_x = x
+          self.pos_y = y
+          self.width = 80
+          self.height = 40
+
+     def update(self):
+               self.width = 80
+               self.height = 40
                
-
-          mouse = pygame.mouse.get_pos()
-          
-          pause_text = font_big.render("Paused",True,black)
-          small_text = font.render("Press Any Key To Play",True,black)
-          score_text_p = font_medium.render(f"Score: {score_points}",True,black)
-          
+               self.obj_1 = pygame.draw.rect(screen,"white",[self.pos_x + 0 ,self.pos_y ,self.width,self.height])
+               #pygame.draw.rect(screen,"blue",[self.pos_x + 300 ,self.pos_y,self.width,self.height])
+               self.obj_2 = pygame.draw.rect(screen,"white",[self.pos_x + 500 ,self.pos_y,self.width,self.height])
 
 
-          
-
-
-          
-          screen.fill(white)
-          #button = pygame.draw.rect(screen,white,[310,300,150,50])
-          #if button.collidepoint(mouse):
-               #back_text = font_big.render("Back",True,"green")
-          #else:
-               #back_text = font_big.render("Back",True,black)
-
-          screen.blit(pause_text,dest=(270,40))
-          #screen.blit(back_text,dest=(310,300))
-          screen.blit(small_text,dest=(200,500))
-          #screen.blit(score_text_p,dest=(250,150))
-
-          pygame.display.update()
-          clock.tick(60)
-
+prot = Protection(100,450)
 run = True
 while run:
      for event in pygame.event.get():
@@ -182,35 +162,56 @@ while run:
                     shoot_sound.play()
                     if current_time - last_shot_time > cooldown_time:
                          last_shot_time = current_time
-                         bullet_pos = [player_x + 40,player_y]
-                   
+                         bullet_pos = [player_x + 30,player_y - 50]
+                         
                          bullets.append(bullet_pos)
                if event.key == pygame.K_ESCAPE:
-                    pause()
+                    show_menu( )
+                         
+               
 
                     
      # update position
      player_rect.topleft = (player_x,player_y)
-     enemy_rect.topleft = (enemy_x,enemy_y)
+     
+     
+     # enemy bullets
+     
+     for x in enemies:
+          enemy_rect.topleft = (x["x"] ,x["y"])
+
+     
+          if random.randint(1,500) < 2:
+               for i in range(3):
+
+                    enemy_bullet_pos = [x["x"] + 25 + i,x["y"] + 50]
+                    enemy_bullets.append(enemy_bullet_pos)
+          
+
+     
      
      
      
 
 
      # drawing player related things: hitbox,health_bar...
-     screen.blit(background,dest=(0,0))
-     hitbox = pygame.draw.rect(screen,black,[player_x + 14,player_y + 15,60,60])
+     #screen.blit(background,dest=(0,0))
+     grey = (32,32,32)
+     screen.fill(grey)
+     #hitbox = pygame.draw.rect(screen,black,[player_x + 14,player_y + 15,60,60])
+     hitbox_rect = pygame.rect.Rect(player_x + 14,player_y + 15,60,60)
      screen.blit(player,player_rect.topleft)
 
-     health_bar = pygame.draw.rect(screen,"green",[player_x + 26,player_y + 80,health_bar_x,health_bar_y - 5])
-     outline = pygame.draw.rect(screen,black,[player_x + 21,player_y + 60,50,10],3)
      
-     for i in enemies:
-          screen.blit(enemy,(i[0],i[1]))
+     #outline = pygame.draw.rect(screen,black,[player_x + 21,player_y + 60,50,10],3)
      
-     for i2 in enemies_red:
-          screen.blit(enemy_2,(i2[0],i2[1]))
-                
+     for i3 in enemies:
+          screen.blit(enemy,(i3["x"],i3["y"]))
+     
+     #for i2 in enemies_red:
+          #screen.blit(enemy_2,(i2[0],i2[1]))
+     
+     
      def input_func():
           global player_x
           # Keyboard input
@@ -227,12 +228,33 @@ while run:
 
                if bullet[1] < 0:
                     bullets.remove(bullet)
+               
           
           # bullet[1] und 0 x und y
 
      
           for bullet in bullets:
                player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,20])
+
+          for i in enemy_bullets:
+               i[1] += 10
+
+               
+               enemy_attack = pygame.draw.rect(screen,white,[i[0],i[1],4,20])
+                    #enemy_attack_rect = pygame.rect.Rect(i3["x"],i3["y"],4,20)
+               if i[1] > screen_height:
+                    enemy_bullets.remove(i)
+                    print("enemy removed!")
+               
+               if enemy_attack.colliderect(prot.obj_1) or enemy_attack.colliderect(prot.obj_2):
+                    enemy_bullets.remove(i)
+               
+               if enemy_attack.colliderect(hitbox_rect):
+                    enemy_bullets.remove(i)
+                    
+               
+
+
 
      # Kollision
      if player_x < 0:
@@ -241,7 +263,8 @@ while run:
           player_x = 710
      
      if enemy_nums == 0:
-          enemy_nums = 40
+          level += 1
+          enemy_nums = 20
           time.sleep(0.1)
           for i in range(enemy_nums):
                col = i % columns 
@@ -249,18 +272,14 @@ while run:
                enemy_x = col * enemy_spacing_x
                enemy_y = init_enemy_y + row * enemy_spacing_y
      
-               enemies.append([enemy_x,enemy_y])
+               enemies.append({"x": enemy_x, "y": enemy_y})
      
      def object_collision():
-          global health_bar_x,score_points,enemy_nums
-          for i in enemies:
-               enemy_rect = pygame.Rect(i[0],i[1],50,50)
-               if hitbox.colliderect(enemy_rect):
-                    health_bar_x -= 10
-                    enemies.remove(i)
+          global score_points,enemy_nums
+          for n in enemies:
+               enemy_rect = pygame.Rect(n["x"],n["y"],50,50)
                
-                    if health_bar_x == 0:
-                         run = False
+                    
                
 
                for bullet in bullets:
@@ -271,23 +290,34 @@ while run:
                          score_points += 100
                          enemy_nums -= 1
                          bullets.remove(bullet)
-                         #print("enemy dead")
-                         i[0] = col * enemy_spacing_x
-                         i[1] = init_enemy_y + row * enemy_spacing_y
-                         enemies.remove(i)
+                         n[0] = col * enemy_spacing_x
+                         n[1] = init_enemy_y + row * enemy_spacing_y
+                         enemies.remove(n)
                          break
+                    #if prot.obj_1.colliderect(bullet_rect):
+                         #bullets.remove(bullet)
+                    #if prot.obj_2.colliderect(bullet_rect):
+                         #bullets.remove(bullet)
+                    
+
+                    
                     
      
 
-     score_text = font.render(f"{score_points}",True,white)
+     score_text = font.render(f"SCORE {score_points}",True,white)
+     level_text = font.render(f"LEVEL {level}",True,white)
+     fps_text = font.render(f"FPS {FPS}",True,white)
+
      screen.blit(score_text,dest=(10,0))
+     screen.blit(level_text,dest=(310,0))
+     screen.blit(fps_text,dest=(660,0))
 
      if __name__ == "__main__":
           object_collision()
           bullet_func()
           input_func()
           
-
+          prot.update()
      pygame.display.update()
-     clock.tick(60)
+     clock.tick(FPS)
 

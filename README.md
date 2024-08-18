@@ -1,6 +1,9 @@
-# SpaceInvader
+# Space Invaders
 
-A simple SpaceInvader game made with python.
+[![Language](https://img.shields.io/badge/language-python-blue.svg?style=flat)](https://www.python.org)
+[![Module](https://img.shields.io/badge/module-pygame-brightgreen.svg?style=flat)](http://www.pygame.org/news.html)
+
+"Space Invaders" is a classic 1978 arcade game where players control a laser cannon, moving it horizontally to shoot down rows of descending aliens before they reach the bottom of the screen. The game gets harder as the aliens speed up. It's one of the most influential video games ever, helping to establish the gaming industry and popularizing the shoot 'em up genre.
 
 # Pictures
 
@@ -8,7 +11,17 @@ A simple SpaceInvader game made with python.
 
 ![Screenshot_320](https://github.com/user-attachments/assets/5e77422e-abc1-4284-8565-a5840d3bad19)
 
+## How To Play
+If you  already have python and pygame you can just go to the directory and start it.
 
+```bash
+git clone https://github.com/Moritz344/SpaceInvader.git
+```
+
+```bash
+cd SpaceInvaders
+python main.py
+```
 
 
 ## Feedback

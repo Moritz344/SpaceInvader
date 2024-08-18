@@ -1,14 +1,19 @@
 # SpaceInvader
+
 A simple SpaceInvader game made with python.
 
-![Screenshot_319](https://github.com/user-attachments/assets/60ea5a49-3cfd-4a52-8d3c-df032e20945a)
+# Pictures
+
+![Screenshot_319](https://github.com/user-attachments/assets/0398e635-3e58-4ab6-853f-0bd4f401cfaf)
+
+![Screenshot_320](https://github.com/user-attachments/assets/5e77422e-abc1-4284-8565-a5840d3bad19)
 
 
-# Usage
-```
-git clone https://github.com/Moritz344/SpaceInvader.git
-```
+## Author
 
-# Ingame
+- [@Moritz344](https://www.github.com/Moritz344)
 
-![Screenshot_320](https://github.com/user-attachments/assets/79561546-0348-4f23-8db1-1af46d00084a)
+
+## Feedback
+
+If you have any feedback, feel free to say it.

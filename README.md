@@ -1,10 +1,33 @@
-# SpaceInvader
-![main_screen](https://github.com/user-attachments/assets/49c48127-8f66-4b33-9542-35174af78c12)
+# Space Invaders
 
-# Usage
-```
+[![Language](https://img.shields.io/badge/language-python-blue.svg?style=flat)](https://www.python.org)
+[![Module](https://img.shields.io/badge/module-pygame-brightgreen.svg?style=flat)](http://www.pygame.org/news.html)
+
+"Space Invaders" is a classic 1978 arcade game where players control a laser cannon, moving it horizontally to shoot down rows of descending aliens before they reach the bottom of the screen. The game gets harder as the aliens speed up. It's one of the most influential video games ever, helping to establish the gaming industry and popularizing the shoot 'em up genre.
+
+# Pictures
+
+![Screenshot_319](https://github.com/user-attachments/assets/0398e635-3e58-4ab6-853f-0bd4f401cfaf)
+
+![Screenshot_320](https://github.com/user-attachments/assets/5e77422e-abc1-4284-8565-a5840d3bad19)
+
+## How To Play
+If you  already have python and pygame you can just go to the directory and start it.
+
+```bash
 git clone https://github.com/Moritz344/SpaceInvader.git
 ```
 
-# Ingame
-![Screenshot_281](https://github.com/user-attachments/assets/dee47fab-dafa-4da7-b43a-6a1710bc8bee)
+```bash
+cd SpaceInvaders
+python main.py
+```
+
+
+## Feedback
+
+If you have any feedback, feel free to comment it.
+
+## Author
+
+- [@Moritz344](https://www.github.com/Moritz344)

@@ -34,6 +34,8 @@ background_music = pygame.mixer.Sound("sounds/music.mp3")
 hit_sound.set_volume(0.1)
 shoot_sound.set_volume(0.1)
 
+exploding = pygame.image.load("assets/exlodingInvader.png")
+exploding = pygame.transform.scale(exploding,(50,30))
 init_enemy_y = 80
 enemy_spacing_x = 80
 enemy_spacing_y = 50
@@ -48,7 +50,6 @@ def spawn_enemy():
      global enemy_nums,enemy_x,enemy_y,init_enemy_y,col,row
      #add_enemy = True
      #level += 1
-     
      enemy_nums += 5
      time.sleep(0.1)
      for i in range(enemy_nums):
@@ -87,8 +88,18 @@ player_health = 3
 background = pygame.image.load("assets/background.png")
 
 # enemy 1
-enemy = pygame.image.load("assets/enemy_3.png")
-enemy= pygame.transform.scale(enemy,(50,50))
+enemy = pygame.image.load("assets/enemy2_1.png")
+enemy= pygame.transform.scale(enemy,(50,35))
+sprites = [
+            pygame.image.load("assets/invader02a.png"),
+            pygame.image.load("assets/invader02b.png"),
+
+        ]
+index = 0
+current_time = 0
+current_sprite = sprites
+animation_speed = 0.015
+
 enemy_rect = enemy.get_rect()
 enemy_rect.topleft = (enemy_x,enemy_y)
 
@@ -104,7 +115,8 @@ last_shot_time = 0  # Time of the last shot
 
 cooldown_time_2 = 300
 last_shot_time_2 = 0
-
+explosion_duration = 20
+explosions = []
 # Text
 pygame.font.init()
 font = pygame.font.SysFont("Minecraft",55)
@@ -120,6 +132,7 @@ level = 0
 
 enemy_bullets = []
 def show_menu():
+     teleport = False
      menu = True
      while menu:
           for event in pygame.event.get():
@@ -139,11 +152,16 @@ def show_menu():
           home = pygame.image.load("assets/background.png")
           #screen.blit(home,dest=(0,0))
           screen.fill(grey)
+          exit_pos_x = 540
+          exit_pos_y = 320
           #pygame.draw.rect(screen,"light grey",[0,0,900,100])
           mouse = pygame.mouse.get_pos()
 
           button_1 = pygame.draw.rect(screen,grey,[100,300,200,80])
-          button_2 = pygame.draw.rect(screen,grey,[500,300,200,80])
+          button_2 = pygame.draw.rect(screen,grey,[exit_pos_x,exit_pos_y,200,80])
+
+          
+          
 
           enemy_img = pygame.image.load("assets/alien.png")
           
@@ -156,9 +174,12 @@ def show_menu():
 
 
           if button_2.collidepoint(mouse):
-                text_2 = font.render("EXIT",True,"green")
+                text_2 = font.render(":(",True,"red")
+                screen.blit(text_2,dest=(exit_pos_x,exit_pos_y))
           else:
                 text_2 = font.render("EXIT",True,"white")
+                screen.blit(text_2,dest=(exit_pos_x,exit_pos_y))
+                #teleport = False
 
 
 
@@ -169,8 +190,10 @@ def show_menu():
           #text_2 = font.render("EXIT",True,"black")
           text_3 = font_big.render("SPACEINVADERS",True,"white")
           
+          
+
           screen.blit(text_1,dest=(104,320))
-          screen.blit(text_2,dest=(540,320))
+          
           screen.blit(text_3,dest=(90,15))
           #screen.blit(enemy_img,dest=(240,150))
           pygame.display.update()
@@ -210,7 +233,7 @@ class Protection:
                self.obj_1 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 0 ,self.pos_y ,self.width,self.height])
                self.obj_2 = pygame.draw.rect(screen,self.obj_colour_2,[self.pos_x + 500 ,self.pos_y,self.width_2,self.height_2])
 
-player_live = 3
+player_live = 8
 def decrease_player_life(amount):
      global player_live
      player_live -= amount
@@ -237,7 +260,8 @@ while run:
                if event.key == pygame.K_ESCAPE:
                     show_menu( )
                          
-               
+
+
                     
      # update position
      player_rect.topleft = (player_x,player_y)
@@ -265,17 +289,26 @@ while run:
      #pygame.draw.rect(screen,"red",[player_x - 5,player_y ,60,60],5)
      screen.blit(player,player_rect.topleft)
 
+     
+
     
      for i3 in enemies:
-          screen.blit(enemy,(i3["x"],i3["y"]))
+          index += 0.01
+          if index >= len(sprites):
+               index = 0
+
+          current_sprite = sprites[int(index)]
+          current_sprite = pygame.transform.scale(current_sprite,(50,35))
+          screen.blit(current_sprite,(i3["x"],i3["y"]))
           
           i3["x"] += i3["speed"] * enemy_direction
 
           if i3["x"] <= 0 or i3["x"] >= screen_width - enemy.get_width():
                     enemy_direction *= -1
                     break
-               
+     
 
+          
      
      
      def input_func():
@@ -306,7 +339,7 @@ while run:
                     prot.height -= 5
                     prot.height_reduced = True
                     prot.obj_colour = "grey"
-                    bullets.remove(bullet)  
+                    bullets.remove(bullet)
                if player_bullet.colliderect(prot.obj_2) and not prot.height_reduced:
                     prot.height_2 -= 5
                     prot.height_reduced = True
@@ -348,6 +381,8 @@ while run:
                     enemy_bullets.remove(i)
                     decrease_player_life(1)
                     
+                    if player_live == 0:
+                         sys.exit(0)
                
 
 
@@ -380,16 +415,27 @@ while run:
                     bullet_rect = pygame.Rect(bullet[0],bullet[1],9,20)
 
                     if bullet_rect.colliderect(enemy_rect):
+                         
                          hit_sound.play()
+                         
                          score_points += 100
                          enemy_nums -= 1
                          bullets.remove(bullet)
                          n[0] = col * enemy_spacing_x
                          n[1] = init_enemy_y + row * enemy_spacing_y
                          enemies.remove(n)
+
+                         explosions.append({"pos": (n["x"],n["y"] ), "timer": explosion_duration})
+                         
+                         #screen.blit(exploding,dest=(bullet[0] ,bullet[1] - 40))
                          break
                    
-
+     for explosion in explosions:
+          screen.blit(exploding,dest=(explosion["pos"]))
+          explosion["timer"] -= 1
+          
+          if explosion["timer"] <= 0:
+               explosions.remove(explosion)
     
      
                     
@@ -398,10 +444,12 @@ while run:
      score_text = font_small.render(f"SCORE {score_points}",True,white)
      level_text = font.render(f"LEVEL {level}",True,white)
      fps_text = font.render(f"FPS {FPS}",True,white)
+     player_live_text = font_small.render(f"{player_live}",True,white)
     #pygame.draw.line(screen, "white", (0, screen_height - 30), (screen_width, screen_height - 30), 2)
 
 
      screen.blit(score_text,dest=(10,10))
+     screen.blit(player_live_text,dest=(750,10))
      #screen.blit(level_text,dest=(10,50))
      #screen.blit(fps_text,dest=(10,100))
 

@@ -9,11 +9,12 @@ A simple SpaceInvader game made with python.
 ![Screenshot_320](https://github.com/user-attachments/assets/5e77422e-abc1-4284-8565-a5840d3bad19)
 
 
-## Author
-
-- [@Moritz344](https://www.github.com/Moritz344)
 
 
 ## Feedback
 
-If you have any feedback, feel free to say it.
+If you have any feedback, feel free to comment it.
+
+## Author
+
+- [@Moritz344](https://www.github.com/Moritz344)

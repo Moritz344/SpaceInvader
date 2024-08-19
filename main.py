@@ -23,8 +23,7 @@ player_y = 500
 enemy_nums = 0
 
 enemies = [] # x und y werte werden gespeichert
-enemies_red = []
-enemy_red_num = 3
+enemies_2 = []
 add_enemy = False
 
 pygame.mixer.init()
@@ -36,6 +35,10 @@ shoot_sound.set_volume(0.1)
 
 exploding = pygame.image.load("assets/exlodingInvader.png")
 exploding = pygame.transform.scale(exploding,(50,30))
+
+exploding_green = pygame.image.load("assets/explosiongreen.png")
+exploding_green = pygame.transform.scale(exploding_green,(50,35))
+
 init_enemy_y = 80
 enemy_spacing_x = 80
 enemy_spacing_y = 50
@@ -44,12 +47,16 @@ max_pos_y = 280
 columns = screen_width // enemy_spacing_x 
 rows = (900 - init_enemy_y) // enemy_spacing_y
 
+init_enemy_y_2 = 0
+enemy_spacing_y_2 = 0
+row_2 = 0
 
+level = 0
 
 def spawn_enemy():
-     global enemy_nums,enemy_x,enemy_y,init_enemy_y,col,row
+     global enemy_nums,enemy_x,enemy_y,init_enemy_y,col,row,level,enemy_x_2,enemy_y_2
      #add_enemy = True
-     #level += 1
+     level += 1
      enemy_nums += 5
      time.sleep(0.1)
      for i in range(enemy_nums):
@@ -58,9 +65,14 @@ def spawn_enemy():
 
           enemy_x = col * enemy_spacing_x  + 50
           enemy_y = init_enemy_y + row * enemy_spacing_y #+ 100
+
+          enemy_x_2 = col * enemy_spacing_x + 50
+          enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 50
                
      
-          enemies.append({"x": enemy_x, "y": enemy_y,"speed":1})
+          enemies.append({"x": enemy_x, "y": enemy_y,"speed":1,})
+          enemies_2.append({"x2":enemy_x_2,"y2": enemy_y_2,"speed": 1})
+
      init_enemy_y += enemy_spacing_y
      if init_enemy_y >= 280:
           print("Maximum y erreicht!")
@@ -88,7 +100,7 @@ player_health = 3
 background = pygame.image.load("assets/background.png")
 
 # enemy 1
-enemy = pygame.image.load("assets/enemy2_1.png")
+enemy = pygame.image.load("assets/invader02a.png")
 enemy= pygame.transform.scale(enemy,(50,35))
 sprites = [
             pygame.image.load("assets/invader02a.png"),
@@ -99,6 +111,20 @@ index = 0
 current_time = 0
 current_sprite = sprites
 animation_speed = 0.015
+
+enemy_2 = pygame.image.load("assets/enemy3_1.png")
+enemy_2 = pygame.transform.scale(enemy_2,(50,35))
+sprites_2 = [
+     pygame.image.load("assets/enemy3_1.png"),
+     pygame.image.load("assets/enemy3_2.png")
+
+]
+index_2 = 0
+current_time_2 = 0
+current_sprite_2 = sprites_2
+
+enemy_rect_2 = enemy_2.get_rect()
+enemy_rect_2.topleft = (enemy_x_2,enemy_y_2)
 
 enemy_rect = enemy.get_rect()
 enemy_rect.topleft = (enemy_x,enemy_y)
@@ -115,8 +141,9 @@ last_shot_time = 0  # Time of the last shot
 
 cooldown_time_2 = 300
 last_shot_time_2 = 0
-explosion_duration = 20
+explosion_duration = 10
 explosions = []
+explosions_green = []
 # Text
 pygame.font.init()
 font = pygame.font.SysFont("Minecraft",55)
@@ -128,13 +155,14 @@ bullets = []
 score_points = 0
 
 #level
-level = 0
 
 enemy_bullets = []
 def show_menu():
+     global player_live
      teleport = False
      menu = True
      while menu:
+          player_live = 8
           for event in pygame.event.get():
                if event.type == pygame.QUIT:
                     menu = False
@@ -182,7 +210,7 @@ def show_menu():
                 #teleport = False
 
 
-
+          
           
           #button_3 = pygame.draw.rect(screen,"red",[1000,300,200,80])
 
@@ -200,17 +228,6 @@ def show_menu():
           clock.tick(60)
 show_menu()
 
-def gameover():
-     gameover = True
-     while gameover:
-          for event in pygame.event.get():
-               if event.type == pygame.QUIT:
-                    gameover = False
-          
-          pygame.display.update()
-          clock.tick(FPS)
-
-
 
 class Protection:
      def __init__(self,x,y):
@@ -225,13 +242,35 @@ class Protection:
 
           self.height_reduced = False  
 
-          self.obj_colour = "white"
-          self.obj_colour_2 = "white"
+          self.obj_colour_2 = "dark green"
+          self.block_1_width = 40
+          self.block_1_height = 20
+          self.block_2_height = 20
+          self.block_3_height = 20
+          self.block_4_height = 20
+
+          self.obj_colour = "dark green"
+          
+          self.block_6_height = 20
+          self.block_6_width = 40
+          self.block_7_height = 20
+          self.block_8_height = 20
+          self.block_9_height = 20
 
      def update(self):
                
-               self.obj_1 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 0 ,self.pos_y ,self.width,self.height])
-               self.obj_2 = pygame.draw.rect(screen,self.obj_colour_2,[self.pos_x + 500 ,self.pos_y,self.width_2,self.height_2])
+               #self.obj_1 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 0 ,self.pos_y ,self.width,self.height])
+               self.obj_1_block_1 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x,self.pos_y,self.block_1_width,self.block_1_height])
+               self.obj_2_block_2 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 40,self.pos_y,40,self.block_2_height])
+               self.obj_3_block_3 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x,self.pos_y + 20,self.block_1_width,self.block_3_height])
+               self.obj_4_block_4 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 40,self.pos_y + 20,40,self.block_4_height])
+
+
+
+               self.obj_6_block_6 = pygame.draw.rect(screen,self.obj_colour  ,[self.pos_x + 500,self.pos_y,40,self.block_6_height])
+               self.obj_7_block_7 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 540,self.pos_y,self.block_1_width,self.block_7_height])
+               self.obj_8_block_8 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 500,self.pos_y + 20,40,self.block_8_height])
+               self.obj_9_block_9 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 540,self.pos_y + 20,self.block_1_width,self.block_9_height])
 
 player_live = 8
 def decrease_player_life(amount):
@@ -240,6 +279,8 @@ def decrease_player_life(amount):
 
      if player_live < 0:
           player_live = 0
+
+
 
 prot = Protection(100,450)
 run = True
@@ -276,7 +317,6 @@ while run:
                     enemy_bullet_pos = [i3["x"] + 25,i3["y"] + 50]
                     enemy_bullets.append(enemy_bullet_pos)
           
-
      
      
      
@@ -290,25 +330,46 @@ while run:
      screen.blit(player,player_rect.topleft)
 
      
+     for enemy_2 in enemies_2:
+          index_2 += 0.01
+          if index_2 >= len(sprites_2):
+               index_2 = 0
+          current_sprite_2 = sprites_2[int(index_2)]
+          current_sprite_2 = pygame.transform.scale(current_sprite_2,(50,35))
 
+
+          screen.blit(current_sprite_2,(enemy_2["x2"],enemy_2["y2"]))
+          enemy_2["x2"] += enemy_2["speed"] * enemy_direction
+          
+
+          if enemy_2["x2"] <= 0 or enemy_2["x2"] >= screen_width - enemy.get_width():
+                    enemy_direction *= -1
+                    break
     
      for i3 in enemies:
           index += 0.01
+         
           if index >= len(sprites):
                index = 0
 
+          
+
           current_sprite = sprites[int(index)]
+         
           current_sprite = pygame.transform.scale(current_sprite,(50,35))
           screen.blit(current_sprite,(i3["x"],i3["y"]))
+
+         
+
           
           i3["x"] += i3["speed"] * enemy_direction
+          
 
           if i3["x"] <= 0 or i3["x"] >= screen_width - enemy.get_width():
                     enemy_direction *= -1
                     break
-     
-
-          
+         
+         
      
      
      def input_func():
@@ -335,17 +396,43 @@ while run:
      
           for bullet in bullets:
                player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,20])
-               if player_bullet.colliderect(prot.obj_1) and not prot.height_reduced:
-                    prot.height -= 5
+               if player_bullet.colliderect(prot.obj_1_block_1) and not prot.height_reduced:
+                    #prot.height -= 5
+                    prot.block_1_height = 0
                     prot.height_reduced = True
-                    prot.obj_colour = "grey"
+                    #prot.obj_colour = "grey"
                     bullets.remove(bullet)
-               if player_bullet.colliderect(prot.obj_2) and not prot.height_reduced:
-                    prot.height_2 -= 5
+               if player_bullet.colliderect(prot.obj_2_block_2) and not prot.height_reduced:
+                    #prot.height_2 -= 5
                     prot.height_reduced = True
-                    
+                    prot.block_2_height = 0
                     prot.obj_colour_2 = "grey"
-                    bullets.remove(bullet)  
+                    bullets.remove(bullet)
+               if player_bullet.colliderect(prot.obj_3_block_3) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_3_height = 0
+                    bullets.remove(bullet)
+               if player_bullet.colliderect(prot.obj_4_block_4) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_4_height = 0
+                    bullets.remove(bullet)
+
+               if player_bullet.colliderect(prot.obj_6_block_6) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_6_height = 0
+                    bullets.remove(bullet)
+               if player_bullet.colliderect(prot.obj_7_block_7) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_7_height = 0
+                    bullets.remove(bullet)
+               if player_bullet.colliderect(prot.obj_8_block_8) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_8_height = 0
+                    bullets.remove(bullet)
+               if player_bullet.colliderect(prot.obj_9_block_9) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_9_height = 0
+                    bullets.remove(bullet)
                else:
                     prot.height_reduced = False
 
@@ -361,16 +448,40 @@ while run:
 
                
                
-               if enemy_attack.colliderect(prot.obj_1) and not prot.height_reduced:
-                    prot.obj_colour = "grey"
-                    prot.height -= 5
+               if enemy_attack.colliderect(prot.obj_1_block_1) and not prot.height_reduced:
+                    prot.block_1_height = 0
                     prot.height_reduced = True
                     enemy_bullets.remove(i)
-               if enemy_attack.colliderect(prot.obj_2) and not prot.height_reduced:
-                    prot.obj_colour_2 = "grey"
-                    prot.height_2 -= 5
+               elif enemy_attack.colliderect(prot.obj_2_block_2) and not prot.height_reduced:
+                    prot.block_2_height = 0
                     prot.height_reduced = True
                     enemy_bullets.remove(i)
+               elif enemy_attack.colliderect(prot.obj_3_block_3) and not prot.height_reduced:
+                    prot.block_3_height = 0
+                    prot.height_reduced = True
+                    enemy_bullets.remove(i)
+               elif enemy_attack.colliderect(prot.obj_4_block_4) and not prot.height_reduced:
+                    prot.block_4_height = 0
+                    prot.height_reduced = True
+                    enemy_bullets.remove(i)
+
+               elif enemy_attack.colliderect(prot.obj_6_block_6) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_6_height = 0
+                    enemy_bullets.remove(i)
+               elif enemy_attack.colliderect(prot.obj_7_block_7) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_7_height = 0
+                    enemy_bullets.remove(i)
+               elif enemy_attack.colliderect(prot.obj_8_block_8) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_8_height = 0
+                    enemy_bullets.remove(i)
+               elif enemy_attack.colliderect(prot.obj_9_block_9) and not prot.height_reduced:
+                    prot.height_reduced = True
+                    prot.block_9_height = 0
+                    enemy_bullets.remove(i)
+
                
                     
                else:
@@ -381,8 +492,8 @@ while run:
                     enemy_bullets.remove(i)
                     decrease_player_life(1)
                     
-                    if player_live == 0:
-                         sys.exit(0)
+     if player_live == 0:
+               show_menu() 
                
 
 
@@ -394,7 +505,7 @@ while run:
           player_x = 750
      
 
-     if len(enemies) == 0:
+     if len(enemies) == 0 and len(enemies_2) == 0:
           add_enemy = True
           enemy_nums += 5
           if add_enemy:
@@ -404,12 +515,13 @@ while run:
           add_enemy = False
      
      def object_collision():
-          global score_points,enemy_nums
+          global score_points,enemy_nums,enemy_rect_2,bullet_rect
           for n in enemies:
-               enemy_rect = pygame.Rect(n["x"],n["y"],50,50)
+               enemy_rect = pygame.Rect(n["x"],n["y"],50,35)
+               
                
                     
-               
+ 
 
                for bullet in bullets:
                     bullet_rect = pygame.Rect(bullet[0],bullet[1],9,20)
@@ -429,6 +541,19 @@ while run:
                          
                          #screen.blit(exploding,dest=(bullet[0] ,bullet[1] - 40))
                          break
+                    
+          for n in enemies_2:
+               enemy_rect_2 = pygame.Rect(n["x2"], n["y2"], 50, 35)
+               for bullet in bullets:
+                    bullet_rect = pygame.Rect(bullet[0], bullet[1], 9, 20)
+                    if bullet_rect.colliderect(enemy_rect_2):
+                         hit_sound.play()
+                         score_points += 150  # Punkte für enemy_2
+                         enemy_nums -= 1
+                         bullets.remove(bullet)
+                         enemies_2.remove(n)
+                         explosions_green.append({"pos2": (n["x2"], n["y2"]), "timer2": explosion_duration})
+                         break
                    
      for explosion in explosions:
           screen.blit(exploding,dest=(explosion["pos"]))
@@ -436,13 +561,19 @@ while run:
           
           if explosion["timer"] <= 0:
                explosions.remove(explosion)
-    
+
+     for explosion2 in explosions_green:
+          screen.blit(exploding_green,dest=(explosion2["pos2"]))
+          explosion2["timer2"] -= 1
+
+          if explosion2["timer2"] <= 0:
+               explosions_green.remove(explosion2)
      
-                    
+           
      
 
      score_text = font_small.render(f"SCORE {score_points}",True,white)
-     level_text = font.render(f"LEVEL {level}",True,white)
+     level_text = font_small.render(f"LEVEL {level}",True,white)
      fps_text = font.render(f"FPS {FPS}",True,white)
      player_live_text = font_small.render(f"{player_live}",True,white)
     #pygame.draw.line(screen, "white", (0, screen_height - 30), (screen_width, screen_height - 30), 2)
@@ -450,7 +581,7 @@ while run:
 
      screen.blit(score_text,dest=(10,10))
      screen.blit(player_live_text,dest=(750,10))
-     #screen.blit(level_text,dest=(10,50))
+     screen.blit(level_text,dest=(10,50))
      #screen.blit(fps_text,dest=(10,100))
 
      if __name__ == "__main__":

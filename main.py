@@ -2,6 +2,7 @@ import pygame
 import random
 import time
 import sys
+import os
 
 #HORRIBLE CODE
 
@@ -18,6 +19,8 @@ player_speed = 5
 player_x = 350
 player_y = 500
 
+current_bullet_color = "white"
+colours = ["green","white"]
 
 
 enemy_nums = 0
@@ -25,6 +28,7 @@ enemy_nums = 0
 enemies = [] # x und y werte werden gespeichert
 enemies_2 = []
 add_enemy = False
+
 
 pygame.mixer.init()
 shoot_sound = pygame.mixer.Sound("sounds/shoot.mp3")
@@ -57,7 +61,10 @@ def spawn_enemy():
      global enemy_nums,enemy_x,enemy_y,init_enemy_y,col,row,level,enemy_x_2,enemy_y_2
      #add_enemy = True
      level += 1
-     enemy_nums += 5
+     if level <= 3:
+          enemy_nums = 5
+     else:
+          enemy_nums = 10
      time.sleep(0.1)
      for i in range(enemy_nums):
           col = i % 5 
@@ -67,7 +74,10 @@ def spawn_enemy():
           enemy_y = init_enemy_y + row * enemy_spacing_y #+ 100
 
           enemy_x_2 = col * enemy_spacing_x + 50
-          enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 50
+          if enemy_nums == 10:
+               enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 100
+          else:
+               enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 50
                
      
           enemies.append({"x": enemy_x, "y": enemy_y,"speed":1,})
@@ -158,11 +168,13 @@ score_points = 0
 
 enemy_bullets = []
 def show_menu():
-     global player_live
+     global player_live,level,score_points
      teleport = False
      menu = True
      while menu:
-          player_live = 8
+          player_live = 4
+          level = 0
+          score_points = 0
           for event in pygame.event.get():
                if event.type == pygame.QUIT:
                     menu = False
@@ -228,6 +240,27 @@ def show_menu():
           clock.tick(60)
 show_menu()
 
+def load_highscore():
+     if os.path.exists("score.txt"):
+          with open("score.txt","r") as file:
+               data = file.readlines()
+               data = [int(score_points.strip()) for score_points in data]
+               return data
+     else:
+          return []
+
+def save_score(data):
+     with open("score.txt","w") as file:
+          data.sort(reverse=True)
+
+          for score_points in data:
+               file.write(f"{score_points}\n")
+
+
+def update_score(highscore_list):
+     highscore_list.append(score_points)
+     return highscore_list
+
 
 class Protection:
      def __init__(self,x,y):
@@ -272,7 +305,51 @@ class Protection:
                self.obj_8_block_8 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 500,self.pos_y + 20,40,self.block_8_height])
                self.obj_9_block_9 = pygame.draw.rect(screen,self.obj_colour,[self.pos_x + 540,self.pos_y + 20,self.block_1_width,self.block_9_height])
 
-player_live = 8
+class Item():
+     def __init__(self,x,y,spawn_delay=15):
+          self.x = x
+          self.y = y
+          
+          self.items = [{"x": self.x,"y":self.y,"speed":2 }]
+
+          self.spawn_delay = spawn_delay
+          self.last_spawn_time = time.time()
+          self.active = True
+          
+          self.heart_img = pygame.image.load("assets/heart.png")
+          self.heart_img = pygame.transform.scale(self.heart_img,(50,50))
+
+     def update(self):
+        # Falls es keine aktiven Items gibt, überprüfen, ob ein neues Item gespawnt werden soll
+        if not self.items:
+            if time.time() - self.last_spawn_time >= self.spawn_delay:
+                # Füge ein neues Item hinzu
+                self.items.append({"x": random.randint(0, 500), "y": 10, "speed": 2})
+                self.last_spawn_time = time.time()
+                self.active = True
+
+        # looping through the items
+        for item in self.items[:]:  # copy
+            if self.active:
+                
+                item["y"] += item["speed"]
+
+                self.y = item["y"]
+                self.x = item["x"]
+
+               
+                screen.blit(self.heart_img, dest=(self.x, self.y))
+                self.item_rect = pygame.Rect(self.x, self.y, 50, 50)
+
+                # checking if item left the screen
+                if item["y"] > screen_height:
+                    self.items.remove(item)  
+                    self.active = False  
+                    self.last_spawn_time = time.time() 
+        #print(self.last_spawn_time - time.time())
+        #print(self.x, self.y)
+
+player_live = 4
 def decrease_player_life(amount):
      global player_live
      player_live -= amount
@@ -280,9 +357,13 @@ def decrease_player_life(amount):
      if player_live < 0:
           player_live = 0
 
-
+highscores = load_highscore()
 
 prot = Protection(100,450)
+item = Item(random.randint(0,500),random.randint(0,100))
+highscores = update_score(highscores)
+save_score(highscores)
+
 run = True
 while run:
      for event in pygame.event.get():
@@ -301,7 +382,7 @@ while run:
                if event.key == pygame.K_ESCAPE:
                     show_menu( )
                          
-
+     
 
                     
      # update position
@@ -316,7 +397,7 @@ while run:
                for i in range(1):
                     enemy_bullet_pos = [i3["x"] + 25,i3["y"] + 50]
                     enemy_bullets.append(enemy_bullet_pos)
-          
+                    shoot_sound.play() 
      
      
      
@@ -382,7 +463,7 @@ while run:
                player_x -= player_speed
      
      def bullet_func():
-          global player_live
+          global player_live,enemy_attack,player_bullet
           # bullet
           for bullet in bullets:
                bullet[1] -= 10
@@ -433,18 +514,31 @@ while run:
                     prot.height_reduced = True
                     prot.block_9_height = 0
                     bullets.remove(bullet)
+               
                else:
                     prot.height_reduced = False
 
+          for item_ in item.items:
+               for bullet in bullets:
+                    player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,20])
+                    if player_bullet.colliderect(item.item_rect):
+                         player_live += 1
+                         print("Item: Kollision mit Spieler bullet")
+                         item.items.remove(item_)
+
+          
+
           for i in enemy_bullets:
-               i[1] += 10
+               i[1] += 5
+               #i[0] += random.randint(0,2)
 
                
-               enemy_attack = pygame.draw.rect(screen,white,[i[0],i[1],4,20])
-                    #enemy_attack_rect = pygame.rect.Rect(i3["x"],i3["y"],4,20)
+               
+               enemy_attack = pygame.draw.rect(screen,current_bullet_color,[i[0],i[1],4,20])
+
                if i[1] > screen_height:
                     enemy_bullets.remove(i)
-                    print("enemy removed!")
+                    print("enemy: bullet removed!")
 
                
                
@@ -491,11 +585,20 @@ while run:
                     print("Player hit!",player_live)
                     enemy_bullets.remove(i)
                     decrease_player_life(1)
+               
+               # player bullet collision with enemy bullet
+               for bullet in bullets:
+                    bullet_rect = pygame.Rect(bullet[0],bullet[1],9,20)
+                    if bullet_rect.colliderect(enemy_attack):
+                         enemy_bullets.remove(i)
+                         
+
+
+               
                     
      if player_live == 0:
                show_menu() 
                
-
 
 
      # Kollision
@@ -507,7 +610,7 @@ while run:
 
      if len(enemies) == 0 and len(enemies_2) == 0:
           add_enemy = True
-          enemy_nums += 5
+          enemy_nums += 10
           if add_enemy:
                spawn_enemy()    
 
@@ -525,7 +628,7 @@ while run:
 
                for bullet in bullets:
                     bullet_rect = pygame.Rect(bullet[0],bullet[1],9,20)
-
+               
                     if bullet_rect.colliderect(enemy_rect):
                          
                          hit_sound.play()
@@ -542,8 +645,11 @@ while run:
                          #screen.blit(exploding,dest=(bullet[0] ,bullet[1] - 40))
                          break
                     
+
+
           for n in enemies_2:
                enemy_rect_2 = pygame.Rect(n["x2"], n["y2"], 50, 35)
+               
                for bullet in bullets:
                     bullet_rect = pygame.Rect(bullet[0], bullet[1], 9, 20)
                     if bullet_rect.colliderect(enemy_rect_2):
@@ -568,20 +674,24 @@ while run:
 
           if explosion2["timer2"] <= 0:
                explosions_green.remove(explosion2)
+
+     
      
            
      
 
      score_text = font_small.render(f"SCORE {score_points}",True,white)
+     highscore_text = font_small.render(f"HighScore {highscores[0] if highscores else 0}",False,white)
      level_text = font_small.render(f"LEVEL {level}",True,white)
      fps_text = font.render(f"FPS {FPS}",True,white)
-     player_live_text = font_small.render(f"{player_live}",True,white)
+     player_live_text = font_small.render(f"LIVES {player_live}",True,white)
     #pygame.draw.line(screen, "white", (0, screen_height - 30), (screen_width, screen_height - 30), 2)
 
 
      screen.blit(score_text,dest=(10,10))
-     screen.blit(player_live_text,dest=(750,10))
+     screen.blit(player_live_text,dest=(650,10))
      screen.blit(level_text,dest=(10,50))
+     screen.blit(highscore_text,dest=(270,10))
      #screen.blit(fps_text,dest=(10,100))
 
      if __name__ == "__main__":
@@ -590,6 +700,7 @@ while run:
           input_func()
           
           prot.update()
+          item.update()
      pygame.display.update()
      clock.tick(FPS); #<--- wtf                                                                                                                                                                                                                          secret = "HIDDEN SECRET!!!"
           

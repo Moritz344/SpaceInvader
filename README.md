@@ -9,7 +9,8 @@
 
 ![Screenshot_319](https://github.com/user-attachments/assets/0398e635-3e58-4ab6-853f-0bd4f401cfaf)
 
-![Screenshot_320](https://github.com/user-attachments/assets/5e77422e-abc1-4284-8565-a5840d3bad19)
+![Screenshot_323](https://github.com/user-attachments/assets/94b49f44-26c4-45dc-97bb-f4724a9ace65)
+
 
 ## How To Play
 If you  already have python and pygame you can just go to the directory and start it.

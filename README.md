@@ -25,10 +25,11 @@ python main.py
 ```
 
 ## Features
-- 2 enemies
+- enemies
 - Shields
 - Items
-- HighScore
+- Level
+- ...
 
 
 ## Feedback

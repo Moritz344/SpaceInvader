@@ -24,6 +24,13 @@ cd SpaceInvaders
 python main.py
 ```
 
+## Features
+- enemies
+- Shields
+- Items
+- Level
+- ...
+
 
 ## Feedback
 

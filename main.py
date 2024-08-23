@@ -32,23 +32,25 @@ add_enemy = False
 
 
 pygame.mixer.init()
-shoot_sound = pygame.mixer.Sound("sounds/shoot.mp3")
-hit_sound = pygame.mixer.Sound("sounds/hit.mp3")
-background_music = pygame.mixer.Sound("sounds/music.mp3")
-hit_sound.set_volume(0.1)
-shoot_sound.set_volume(0.1)
+shoot_sound = pygame.mixer.Sound("sounds/laser.ogg")
+hit_sound = pygame.mixer.Sound("sounds/explosion.ogg")
+background_music = pygame.mixer.Sound("sounds/music.ogg")
+hit_sound.set_volume(0.06)
+shoot_sound.set_volume(0.06)
+
+
 
 exploding = pygame.image.load("assets/exlodingInvader.png")
-exploding = pygame.transform.scale(exploding,(50,30))
+exploding = pygame.transform.scale(exploding,(40,30))
 
 exploding_green = pygame.image.load("assets/explosiongreen.png")
-exploding_green = pygame.transform.scale(exploding_green,(50,35))
+exploding_green = pygame.transform.scale(exploding_green,(40,30))
 
 exploding_purple = pygame.image.load("assets/explosionpurple.png")
-exploding_purple = pygame.transform.scale(exploding_purple,(50,35))
+exploding_purple = pygame.transform.scale(exploding_purple,(40,30))
 
-init_enemy_y = 80
-enemy_spacing_x = 80
+init_enemy_y = 110
+enemy_spacing_x = 50
 enemy_spacing_y = 50
 enemy_direction = 1
 max_pos_y = 280
@@ -77,35 +79,36 @@ def spawn_enemy():
 
      #add_enemy = True
      level += 1
+     
      print(level)
      if level <= 3:
-          enemy_nums = 5
+          enemy_nums = 2
      else:
-          enemy_nums = 10
+          enemy_nums = 2
      time.sleep(0.1)
      for i in range(enemy_nums):
-          col = i % 5 
-          row = i // 5
+          col = i % 10 
+          row = i // 10
 
           enemy_x = col * enemy_spacing_x  + 50
-          enemy_y = init_enemy_y + row * enemy_spacing_y #+ 100
+          enemy_y = init_enemy_y + row * enemy_spacing_y - 50
 
           enemy_x_2 = col * enemy_spacing_x + 50
-          enemy_x_3 = col * enemy_spacing_x +50
+          enemy_x_3 = col * enemy_spacing_x + 50
           if enemy_nums == 10:
                enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 100
                enemy_y_3 = init_enemy_y + row * enemy_spacing_y + 200
           else:
                enemy_y_2 = init_enemy_y + row * enemy_spacing_y + 50
-               enemy_y_3 = init_enemy_y + row * enemy_spacing_y + 100
+               enemy_y_3 = init_enemy_y + row * enemy_spacing_y + 150
           
      
-          enemies.append({"x": enemy_x, "y": enemy_y,"speed":1,})
-          enemies_2.append({"x2":enemy_x_2,"y2": enemy_y_2,"speed": 1})
-          enemies_3.append({"x3":enemy_x_3,"y3": enemy_y_3,"speed":1})
+          enemies.append({"x": enemy_x, "y": enemy_y,"speed":0.5,})
+          enemies_2.append({"x2":enemy_x_2,"y2": enemy_y_2,"speed": 0.5})
+          enemies_3.append({"x3":enemy_x_3,"y3": enemy_y_3,"speed":0.5})
 
-     init_enemy_y += enemy_spacing_y
-     if init_enemy_y >= 180:
+     init_enemy_y += enemy_spacing_y 
+     if init_enemy_y >= 280:
           print("Maximum y erreicht!")
           init_enemy_y = 100
           enemy_y = 0
@@ -123,7 +126,7 @@ white = (255,255,255)
 
 # images
 player = pygame.image.load("assets/player.png")
-player = pygame.transform.scale(player,(50,50))
+player = pygame.transform.scale(player,(30,30))
 player_2 = pygame.transform.scale(player,(25,25))
 player_rect = player.get_rect()
 player_rect.topleft = (player_x,player_y)
@@ -260,12 +263,15 @@ def show_info():
           screen.blit(text,dest=(200,100))
           pygame.display.update()
           clock.tick(60)
-
+play_music = False
 
 enemy_bullets = []
 def show_menu():
      global player_live,level,score_points
+     global play_music
      menu = True
+     background_music.play()
+     background_music.set_volume(0.07)
      while menu:
           player_live = 4
           for event in pygame.event.get():
@@ -274,9 +280,11 @@ def show_menu():
                     
                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                         background_music.stop()
                          menu = False
                if event.type == pygame.MOUSEBUTTONDOWN:
                     if button_1.collidepoint(event.pos):
+                         background_music.stop()
                          menu = False
                     if button_2.collidepoint(event.pos):
                          sys.exit("bye")
@@ -512,30 +520,30 @@ while run:
      
      for i3 in enemies:
           enemy_rect.topleft = (i3["x"] ,i3["y"]) 
-          if random.randint(1,600) < 2:
+          if random.randint(1,1000) < 2:
                for i in range(1):
                     print("Enemy_1: Shot a bullet!")
                     enemy_bullet_pos = [i3["x"] + 25,i3["y"] + 50]
                     enemy_bullets.append(enemy_bullet_pos)
-                    shoot_sound.play() 
+                    #shoot_sound.play() 
      
      for x in enemies_2:
           enemy_rect_2.topleft = (x["x2"],x["x2"])
-          if random.randint(1,700) < 2:
+          if random.randint(1,1000) < 2:
                for i in range(1):
                     print("Enemy_2: Shot a bullet!")
                     enemy_bullet_pos = [x["x2"]+25,x["y2"]+50]
                     enemy_bullets.append(enemy_bullet_pos)
-                    shoot_sound.play()
+                    #shoot_sound.play()
 
      for y in enemies_3:
           enemy_rect_3.topleft = (y["x3"],y["x3"])
-          if random.randint(1,800) < 2:
+          if random.randint(1,1000) < 2:
                for i in range(1):
                     print("Enemy_3: Shot a bullet!")
                     enemy_bullet_pos = [y["x3"]+25,y["y3"]+20]
                     enemy_bullets.append(enemy_bullet_pos)
-                    shoot_sound.play() 
+                    #shoot_sound.play() 
      
      
 
@@ -552,8 +560,8 @@ while run:
           if index_2 >= len(sprites_2):
                index_2 = 0
           current_sprite_2 = sprites_2[int(index_2)]
-          current_sprite_2 = pygame.transform.scale(current_sprite_2,(50,35))
-
+          current_sprite_2 = pygame.transform.scale(current_sprite_2,(30,30))
+          # 50 35
 
           screen.blit(current_sprite_2,(enemy_2["x2"],enemy_2["y2"]))
 
@@ -573,7 +581,7 @@ while run:
                index_3 = 0
 
           current_sprite_3 = sprites_3[int(index_3)]
-          current_sprite_3 = pygame.transform.scale(current_sprite_3,(50,35))
+          current_sprite_3 = pygame.transform.scale(current_sprite_3,(30,30))
           screen.blit(current_sprite_3,(enemy_3["x3"],enemy_3["y3"]))
 
           
@@ -595,15 +603,12 @@ while run:
 
           current_sprite = sprites[int(index)]
          
-          current_sprite = pygame.transform.scale(current_sprite,(50,35))
+          current_sprite = pygame.transform.scale(current_sprite,(35,30))
           screen.blit(current_sprite,(i3["x"],i3["y"]))
 
          
-
-          
+          #print("LEVEL ",level)
           i3["x"] += i3["speed"] * enemy_direction
-          
-
           
 
           if i3["x"] <= 0 or i3["x"] >= screen_width - enemy.get_width() - 50:
@@ -636,7 +641,7 @@ while run:
 
      
           for bullet in bullets:
-               player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,20])
+               player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,15])
                if player_bullet.colliderect(prot.obj_1_block_1) and not prot.height_reduced:
                     #prot.height -= 5
                     prot.block_1_height = 0
@@ -680,7 +685,7 @@ while run:
 
           for item_ in item.items:
                for bullet in bullets:
-                    player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,20])
+                    player_bullet = pygame.draw.rect(screen,white,[bullet[0],bullet[1],4,10])
                     if player_bullet.colliderect(item.item_rect):
                          player_live += 1
                          print("Item: Kollision mit Spieler bullet")
@@ -694,7 +699,7 @@ while run:
 
                
                
-               enemy_attack = pygame.draw.rect(screen,current_bullet_color,[i[0],i[1],4,20])
+               enemy_attack = pygame.draw.rect(screen,current_bullet_color,[i[0],i[1],4,15])
 
                if i[1] > screen_height:
                     enemy_bullets.remove(i)
@@ -772,7 +777,14 @@ while run:
           add_enemy = True
           #enemy_nums += 5
           if add_enemy:
-               spawn_enemy()    
+               spawn_enemy()
+               for i3 in enemies:
+                    i3["speed"] += 0.5
+               for i in enemies_2:
+                    i["speed"] += 0.5
+               for x in enemies_3:
+                    x["speed"] += 0.5 
+               print(x["speed"])  
 
      else:
           add_enemy = False

@@ -205,10 +205,10 @@ explosions_green = []
 explosions_purple = []
 # Text
 pygame.font.init()
-font = pygame.font.SysFont("MinecraftRegular.otf",55)
-font_big = pygame.font.SysFont("MinecraftRegular.otf",70)
-font_medium = pygame.font.SysFont("spaceinvadersregular",60)
-font_small = pygame.font.SysFont("MinecraftRegular.otf",30)
+font = pygame.font.Font("MinecraftRegular.otf",55)
+font_big = pygame.font.Font("MinecraftRegular.otf",70)
+font_medium = pygame.font.Font("MinecraftRegular.otf",60)
+font_small = pygame.font.Font("MinecraftRegular.otf",30)
 
 bullets = []
 score_points = 0
@@ -361,7 +361,7 @@ def show_menu():
 
           screen.blit(text_1,dest=(104,320))
           
-          screen.blit(text_3,dest=(90,15))
+          screen.blit(text_3,dest=(130,15))
           #screen.blit(enemy_img,dest=(240,150))
           pygame.display.update()
           clock.tick(60)

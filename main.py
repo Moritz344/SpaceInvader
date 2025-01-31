@@ -11,7 +11,7 @@ screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width,screen_height))
 caption = pygame.display.set_caption("SpaceInvaders")
-icon = pygame.image.load("/root/SpaceInvader/assets/icon.png")
+icon = pygame.image.load("assets/icon.png")
 pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
 FPS = 60
@@ -35,22 +35,22 @@ add_enemy = False
 
 
 pygame.mixer.init()
-shoot_sound = pygame.mixer.Sound("/root/SpaceInvader/sounds/laser.ogg")
-hit_sound = pygame.mixer.Sound("/root/SpaceInvader/sounds/explosion.ogg")
-background_music = pygame.mixer.Sound("/root/SpaceInvader/sounds/music.ogg")
+shoot_sound = pygame.mixer.Sound("sounds/laser.ogg")
+hit_sound = pygame.mixer.Sound("sounds/explosion.ogg")
+background_music = pygame.mixer.Sound("sounds/music.ogg")
 hit_sound.set_volume(0.06)
 shoot_sound.set_volume(0.06)
 
 death_trigger = False
 kills = 0
 
-exploding = pygame.image.load("/root/SpaceInvader/assets/exlodingInvader.png")
+exploding = pygame.image.load("assets/exlodingInvader.png")
 exploding = pygame.transform.scale(exploding,(40,30))
 
-exploding_green = pygame.image.load("/root/SpaceInvader/assets/explosiongreen.png")
+exploding_green = pygame.image.load("assets/explosiongreen.png")
 exploding_green = pygame.transform.scale(exploding_green,(40,30))
 
-exploding_purple = pygame.image.load("/root/SpaceInvader/assets/explosionpurple.png")
+exploding_purple = pygame.image.load("assets/explosionpurple.png")
 exploding_purple = pygame.transform.scale(exploding_purple,(40,30))
 
 init_enemy_y = 120 
@@ -131,20 +131,20 @@ black = (0,0,0)
 white = (255,255,255)
 
 # images
-player = pygame.image.load("/root/SpaceInvader/assets/player.png")
+player = pygame.image.load("assets/player.png")
 player = pygame.transform.scale(player,(40,30))
 player_2 = pygame.transform.scale(player,(25,25))
 player_rect = player.get_rect()
 player_rect.topleft = (player_x,player_y)
 player_health = 3
-background = pygame.image.load("/root/SpaceInvader/assets/background.png")
+background = pygame.image.load("assets/background.png")
 
 # enemy 1
-enemy = pygame.image.load("/root/SpaceInvader/assets/invader02a.png")
+enemy = pygame.image.load("assets/invader02a.png")
 #enemy= pygame.transform.scale(enemy,(50,35))
 sprites = [
-            pygame.image.load("/root/SpaceInvader/assets/invader02a.png"),
-            pygame.image.load("/root/SpaceInvader/assets/invader02b.png"),
+            pygame.image.load("assets/invader02a.png"),
+            pygame.image.load("assets/invader02b.png"),
 
         ]
 #index = 0
@@ -152,29 +152,29 @@ current_time = 0
 current_sprite = sprites
 animation_speed = 0.015
 
-enemy_2 = pygame.image.load("/root/SpaceInvader/assets/enemy3_1.png")
+enemy_2 = pygame.image.load("assets/enemy3_1.png")
 #enemy_2 = pygame.transform.scale(enemy_2,(50,35))
 sprites_2 = [
-     pygame.image.load("/root/SpaceInvader/assets/enemy3_1.png"),
-     pygame.image.load("/root/SpaceInvader/assets/enemy3_2.png")
+     pygame.image.load("assets/enemy3_1.png"),
+     pygame.image.load("assets/enemy3_2.png")
 
 ]
 index_2 = 0
 current_time_2 = 0
 current_sprite_2 = sprites_2
 
-enemy_3 = pygame.image.load("/root/SpaceInvader/assets/enemy1_1.png")
+enemy_3 = pygame.image.load("assets/enemy1_1.png")
 #enemy_3 = pygame.transform.scale(enemy_3,(50,35))
 sprites_3 = [
-     pygame.image.load("/root/SpaceInvader/assets/enemy1_1.png"),
-     pygame.image.load("/root/SpaceInvader/assets/enemy1_2.png")
+     pygame.image.load("assets/enemy1_1.png"),
+     pygame.image.load("assets/enemy1_2.png")
 ]
 
 index_3 = 0
 current_time_3 = 0
 current_sprite_3 = sprites_3
 
-enemy_4 = pygame.image.load("/root/SpaceInvader/assets/mystery.png")
+enemy_4 = pygame.image.load("assets/mystery.png")
 enemy_4 = pygame.transform.scale(enemy_4,(55,30))
 enemy_rect_4 = enemy_4.get_rect()
 enemy_rect_4.topleft = (enemy_x_4,enemy_y_4)

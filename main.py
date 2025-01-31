@@ -4,6 +4,7 @@ import time
 import sys
 import os
 
+
 #HORRIBLE CODE
 
 screen_width = 800
